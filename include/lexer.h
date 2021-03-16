@@ -1,3 +1,5 @@
+#include <stdbool.h>
+#include <regex.h>
 #include "definitions.h"
 
 #ifndef LEXER_H
