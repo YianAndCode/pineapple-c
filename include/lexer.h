@@ -43,11 +43,11 @@ void skipSourceCode(Lexer* lexer, int n);
 
 bool isIgnored(Lexer* lexer);
 
-char* scan(Lexer* lexer); // TODO: regex
+void scan(Lexer* lexer, regex_t* regex, char* result, int* length);
 
 char* scanBeforeToken(Lexer* lexer, char* token);
 
-char* scanName(Lexer* lexer);
+void scanName(Lexer* lexer, char* name, int* length);
 
 token GetNextToken(Lexer* lexer);
 
