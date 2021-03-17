@@ -27,7 +27,7 @@ typedef struct {
     int   next_token_line_num;
 } Lexer;
 
-Lexer* NexLexer(char* source_code);
+Lexer* NewLexer(char* source_code);
 
 int GetLineNum(Lexer* lexer);
 
