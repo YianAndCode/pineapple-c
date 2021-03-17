@@ -1,2 +1,4 @@
-#include "include/lexer.h"
-#include "include/definitions.h"
+#include "lexer.h"
+#include "definitions.h"
+
+const char* RegexName = "^[A-Za-z0-9_]+";
