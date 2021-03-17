@@ -35,9 +35,9 @@ void scan(Lexer* lexer, regex_t* regex, char* result, int* length)
         *length = pm[0].rm_eo - pm[0].rm_so + 1;
 
         result = (char*)realloc(result, sizeof(char) * (*length));
-        memcpy(result, lexer->source_code + pm[0].rm_so, length);
+        memcpy(result, lexer->source_code + pm[0].rm_so, *length);
 
-        skipSourceCode(lexer, length);
+        skipSourceCode(lexer, *length);
         return;
     } else {
         printf("unreachable\n");
