@@ -25,6 +25,16 @@ int GetLineNum(Lexer* lexer)
     return lexer->line_num;
 }
 
+void skipSourceCode(Lexer* lexer, int n)
+{
+    //
+}
+
+bool isIgnored(Lexer* lexer)
+{
+    // 
+}
+
 void scan(Lexer* lexer, regex_t* regex, char* result, int* length)
 {
     regmatch_t pm[1];
@@ -55,4 +65,31 @@ void scanName(Lexer* lexer, char* name, int* length)
     scan(lexer, nameRegex, name, length);
 
     regfree(nameRegex);
+}
+
+token_t GetNextToken(Lexer* lexer)
+{
+    if (lexer->next_token_line_num > 0) {
+        token_t token;
+        token.line_num   = lexer->next_token_line_num;
+        token.token_type = lexer->next_token_type;
+        token.token      = lexer->next_token;
+
+        lexer->line_num = lexer->next_token_line_num;
+        lexer->next_token_line_num = 0;
+
+        return token;
+    } else {
+        return MatchToken(lexer);
+    }
+}
+
+token_t MatchToken(Lexer* lexer)
+{
+    // 
+}
+
+bool isLetter(char c)
+{
+    return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
 }
