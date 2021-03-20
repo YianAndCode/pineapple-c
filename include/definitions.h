@@ -31,8 +31,8 @@ typedef struct {
     int           line_num;
     statement_t** statements;
 } source_code_t;
-    int         line_num;
-    statement** statements;
-} source_code;
+
+token_t* NewToken(int line_num, int token_type, char* token);
+void FreeToken(token_t* token);
 
 #endif

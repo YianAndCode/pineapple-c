@@ -6,6 +6,7 @@ set(CMAKE_C_STANDARD 99)
 set(SOURCES
     src/lexer.c
     src/parser.c
+    src/definitions.c
     src/main.c
 )
 
