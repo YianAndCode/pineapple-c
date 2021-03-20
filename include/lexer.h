@@ -31,7 +31,7 @@ Lexer* NewLexer(char* source_code);
 
 int GetLineNum(Lexer* lexer);
 
-token NextTokenIs(Lexer* lexer, int token_type);
+token_t NextTokenIs(Lexer* lexer, int token_type);
 
 void LookAheadAndSkip(Lexer* lexer, int expected_type);
 
@@ -49,9 +49,9 @@ char* scanBeforeToken(Lexer* lexer, char* token);
 
 void scanName(Lexer* lexer, char* name, int* length);
 
-token GetNextToken(Lexer* lexer);
+token_t GetNextToken(Lexer* lexer);
 
-token MatchToken(Lexer* lexer);
+token_t MatchToken(Lexer* lexer);
 
 bool isLetter(char c);
 
