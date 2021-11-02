@@ -8,6 +8,7 @@ set(SOURCES
     src/parser.c
     src/definitions.c
     src/main.c
+    include/cHashMap/cHashMap.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
