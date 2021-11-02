@@ -1,0 +1,3 @@
+[submodule "include/cHashMap"]
+	path = include/cHashMap
+	url = https://github.com/YianAndCode/cHashMap.git
