@@ -20,6 +20,28 @@ token_t pack_token(int line_num, int token_type, char* token)
     return packed;
 }
 
+void initTokenMap(Lexer* lexer)
+{
+    lexer->TokenMap[TOKEN_EOF]         = "EOF";
+    lexer->TokenMap[TOKEN_VAR_PREFIX]  = "$";
+    lexer->TokenMap[TOKEN_LEFT_PAREN]  = "(";
+    lexer->TokenMap[TOKEN_RIGHT_PAREN] = ")";
+    lexer->TokenMap[TOKEN_EQUAL]       = "=";
+    lexer->TokenMap[TOKEN_QUOTE]       = "\"";
+    lexer->TokenMap[TOKEN_DUOQUOTE]    = "\"\"";
+    lexer->TokenMap[TOKEN_NAME]        = "Name";
+    lexer->TokenMap[TOKEN_PRINT]       = "print";
+    lexer->TokenMap[TOKEN_IGNORED]     = "Ignored";
+}
+
+void initKeywordMap(Lexer* lexer)
+{
+    HashMap map = createHashMap();
+    map->put(map, "print", (void*)TOKEN_PRINT);
+
+    lexer->KeywordMap = map;
+}
+
 Lexer* NewLexer(char* source_code)
 {
     Lexer* lexer = (Lexer*)calloc(sizeof(Lexer), 1);
@@ -28,6 +50,8 @@ Lexer* NewLexer(char* source_code)
         exit(-1);
     }
     lexer->source_code = source_code;
+    initTokenMap(lexer);
+    initKeywordMap(lexer);
     return lexer;
 }
 
@@ -132,7 +156,7 @@ token_t MatchToken(Lexer* lexer)
         token = pack_token(
             lexer->line_num,
             TOKEN_IGNORED,
-            NULL // TODO: token map
+            lexer->TokenMap[TOKEN_IGNORED]
         );
         return token;
     }
@@ -141,7 +165,7 @@ token_t MatchToken(Lexer* lexer)
         token = pack_token(
             lexer->line_num,
             TOKEN_EOF,
-            NULL
+            lexer->TokenMap[TOKEN_EOF]
         );
         return token;
     }
@@ -152,7 +176,7 @@ token_t MatchToken(Lexer* lexer)
             token = pack_token(
                 lexer->line_num,
                 TOKEN_VAR_PREFIX,
-                NULL
+                lexer->TokenMap[TOKEN_VAR_PREFIX]
             );
             return token;
 
@@ -161,7 +185,7 @@ token_t MatchToken(Lexer* lexer)
             token = pack_token(
                 lexer->line_num,
                 TOKEN_LEFT_PAREN,
-                NULL
+                lexer->TokenMap[TOKEN_LEFT_PAREN]
             );
             return token;
 
@@ -170,7 +194,7 @@ token_t MatchToken(Lexer* lexer)
             token = pack_token(
                 lexer->line_num,
                 TOKEN_RIGHT_PAREN,
-                NULL
+                lexer->TokenMap[TOKEN_RIGHT_PAREN]
             );
             return token;
 
@@ -179,7 +203,7 @@ token_t MatchToken(Lexer* lexer)
             token = pack_token(
                 lexer->line_num,
                 TOKEN_EQUAL,
-                NULL
+                lexer->TokenMap[TOKEN_EQUAL]
             );
             return token;
 
@@ -189,7 +213,7 @@ token_t MatchToken(Lexer* lexer)
                 token = pack_token(
                     lexer->line_num,
                     TOKEN_DUOQUOTE,
-                    NULL
+                    lexer->TokenMap[TOKEN_DUOQUOTE]
                 );
                 return token;
             }
@@ -197,7 +221,7 @@ token_t MatchToken(Lexer* lexer)
             token = pack_token(
                 lexer->line_num,
                 TOKEN_QUOTE,
-                NULL
+                lexer->TokenMap[TOKEN_QUOTE]
             );
             return token;
     } // switch
@@ -207,21 +231,22 @@ token_t MatchToken(Lexer* lexer)
         int* length;
         scanName(lexer, name, length);
 
-        // if (keywordMap[name] != NULL) { // TODO: keyword map
-        //     token = pack_token(
-        //         lexer->line_num,
-        //         keywordMap[name],
-        //         name
-        //     );
-        //     return token;
-        // } else {
+        void* keyword = lexer->KeywordMap->get(lexer->KeywordMap, name);
+        if (keyword != NULL) {
+            token = pack_token(
+                lexer->line_num,
+                (int)keyword,
+                name
+            );
+            return token;
+        } else {
             token = pack_token(
                 lexer->line_num,
                 TOKEN_NAME,
                 name
             );
             return token;
-        // } // else
+        } // else
     }
 
     printf("matchToken(): unexpected symbol near '%c'.\n", lexer->source_code[0]);

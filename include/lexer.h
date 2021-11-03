@@ -1,9 +1,12 @@
 #include <stdbool.h>
 #include <regex.h>
 #include "definitions.h"
+#include "cHashMap/cHashMap.h"
 
 #ifndef LEXER_H
 #define LEXER_H
+
+#define COUNT_TOKENS 10
 
 enum TOKEN
 {
@@ -20,11 +23,13 @@ enum TOKEN
 };
 
 typedef struct {
-    char* source_code;
-    int   line_num;
-    char* next_token;
-    int   next_token_type;
-    int   next_token_line_num;
+    char*   source_code;
+    int     line_num;
+    char*   next_token;
+    int     next_token_type;
+    int     next_token_line_num;
+    char*   TokenMap[COUNT_TOKENS];
+    HashMap KeywordMap;
 } Lexer;
 
 Lexer* NewLexer(char* source_code);
