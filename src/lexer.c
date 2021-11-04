@@ -62,17 +62,45 @@ int GetLineNum(Lexer* lexer)
 
 token_t NextTokenIs(Lexer* lexer, int token_type)
 {
-    // TODO:
+    token_t nextToken = GetNextToken(lexer);
+    if (nextToken.token_type != token_type) {
+        printf(
+            "NextTokenIs(): syntax error nerar '%s', expected token: {%s} but got {%s}.\n",
+            nextToken.token, lexer->TokenMap[token_type], lexer->TokenMap[nextToken.token_type]
+        );
+        exit(-1);
+    }
+
+    return nextToken;
 }
 
 void LookAheadAndSkip(Lexer* lexer, int token_type)
 {
-    // TODO:
+    int now_line_num = lexer->line_num;
+    token_t nextToken = GetNextToken(lexer);
+    // not expected type, reverser cursor
+    if (nextToken.token_type != token_type) {
+        lexer->line_num            = now_line_num;
+        lexer->next_token          = nextToken.token;
+        lexer->next_token_line_num = nextToken.line_num;
+        lexer->next_token_type     = nextToken.token_type;
+    }
 }
 
 int LookAhead(Lexer* lexer)
 {
-    // TODO:
+    if (lexer->next_token_line_num > 0) {
+        return lexer->next_token_type;
+    }
+
+    int now_line_num = lexer->line_num;
+    token_t nextToken = GetNextToken(lexer);
+    lexer->line_num            = now_line_num;
+    lexer->next_token          = nextToken.token;
+    lexer->next_token_line_num = nextToken.line_num;
+    lexer->next_token_type     = nextToken.token_type;
+
+    return lexer->next_token_type;
 }
 
 bool nextSourceCodeIs(Lexer* lexer, char* s)
@@ -85,11 +113,46 @@ void skipSourceCode(Lexer* lexer, int n)
     lexer->source_code += n;
 }
 
+static bool isNewLine(char c)
+{
+    return c == '\n' || c == '\r';
+}
+
+static bool isWhiteSpace(char c)
+{
+    switch (c) {
+        case '\t':
+        case '\n':
+        case '\v':
+        case '\f':
+        case '\r':
+        case ' ':
+            return true;
+        default:
+            return false;
+    }
+}
+
 bool isIgnored(Lexer* lexer)
 {
     bool is_ignore = false;
 
-    // TODO:
+    while (strlen(lexer->source_code) > 0) {
+        if (nextSourceCodeIs(lexer, "\r\n") || nextSourceCodeIs(lexer, "\n\r")) {
+            skipSourceCode(lexer, 2);
+            lexer->line_num++;
+            is_ignore = true;
+        } else if (isNewLine(*lexer->source_code)) {
+            skipSourceCode(lexer, 1);
+            lexer->line_num++;
+            is_ignore = true;
+        } else if (isWhiteSpace(*lexer->source_code)) {
+            skipSourceCode(lexer, 1);
+            is_ignore = true;
+        } else {
+            break;
+        }
+    }
 
     return is_ignore;
 }
@@ -116,7 +179,16 @@ void scan(Lexer* lexer, regex_t* regex, char* result, int* length)
 
 char* scanBeforeToken(Lexer* lexer, char* token)
 {
-    // TODO:
+    for (int i = 0; i <= strlen(token) - strlen(token); i++) {
+        if (strncmp(lexer->source_code + i, token, strlen(token)) == 0) {
+            char* result = (char*)calloc(sizeof(char), i + 1);
+            memcpy(result, lexer->source_code, i);
+            return result;
+        }
+    }
+
+    printf("Unreachable!\n");
+    exit(-1);
 }
 
 void scanName(Lexer* lexer, char* name, int* length)
