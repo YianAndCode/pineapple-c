@@ -19,10 +19,10 @@ bool parseAssignment(Lexer *lexer, assignment_statement_t* assignment);
 // Print ::= "print" "(" Ignored Variable Ignored ")" Ignored
 bool parsePrint(Lexer *lexer, print_statement_t* print);
 
-// Statement ::= Print | Assignment
-bool parseStatements(Lexer *lexer, statement_t** statement, int* count);
-
 bool parseStatement(Lexer *lexer, statement_t* statement);
+
+// Statement ::= Print | Assignment
+bool parseStatements(Lexer *lexer, statement_t** statements, int* count);
 
 // SourceCode ::= Statement+ 
 bool parseSourceCode(Lexer *lexer, source_code_t* source_code);
