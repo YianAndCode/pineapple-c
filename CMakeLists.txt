@@ -7,6 +7,7 @@ set(SOURCES
     src/lexer.c
     src/parser.c
     src/definitions.c
+    src/backend.c
     src/main.c
     include/cHashMap/cHashMap.c
 )
