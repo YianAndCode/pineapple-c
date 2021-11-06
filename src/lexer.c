@@ -299,9 +299,9 @@ token_t MatchToken(Lexer* lexer)
     } // switch
 
     if (lexer->source_code[0] == '_' || isLetter(lexer->source_code[0])) {
-        char* name;
-        int* length;
-        scanName(lexer, name, length);
+        char* name = malloc(sizeof(char) * 1);
+        int length;
+        scanName(lexer, name, &length);
 
         void* keyword = lexer->KeywordMap->get(lexer->KeywordMap, name);
         if (keyword != NULL) {
