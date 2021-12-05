@@ -1,5 +1,6 @@
 #include "parser.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 bool parseName(Lexer *lexer, char *name)
 {
@@ -84,16 +85,23 @@ bool parseStatement(Lexer *lexer, statement_t* statement)
 {
     LookAheadAndSkip(lexer, TOKEN_IGNORED);
 
-    switch (LookAhead(lexer))
+    int next_token = LookAhead(lexer);
+    switch (next_token)
     {
         case TOKEN_PRINT:
             statement->type = STATEMENT_PRINT;
+            statement->var = malloc(sizeof(variable_t));
             return parsePrint(lexer, (print_statement_t*)statement);
 
         case TOKEN_VAR_PREFIX:
             statement = realloc(statement, sizeof(assignment_statement_t));
             statement->type = STATEMENT_ASSIGNMENT;
+            statement->var = malloc(sizeof(variable_t));
             return parseAssignment(lexer, (assignment_statement_t*)statement);
+
+        default:
+            printf("parseStatement(): unknown Statement.\n");
+            return false;
     }
 
     return true;
@@ -104,11 +112,13 @@ bool parseStatements(Lexer *lexer, statement_t** statements, int* count)
     *count = 0;
     while (!isSourceCodeEnd(LookAhead(lexer)))
     {
-        statement_t* statement = malloc(sizeof(statement_t));
+        statement_t* statement = calloc(1, sizeof(statement_t*));
         if (!parseStatement(lexer, statement))
         {
+            free(statement);
             return false;
         }
+        statements = realloc(statements, sizeof(statement_t*) * (*count + 1));
         statements[*count] = statement;
         (*count)++;
     }

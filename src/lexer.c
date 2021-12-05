@@ -50,6 +50,7 @@ Lexer* NewLexer(char* source_code)
         exit(-1);
     }
     lexer->source_code = source_code;
+    lexer->line_num = 1;
     initTokenMap(lexer);
     initKeywordMap(lexer);
     return lexer;
@@ -164,10 +165,11 @@ void scan(Lexer* lexer, regex_t* regex, char* result, int* length)
 
     status = regexec(regex, lexer->source_code, 1, pm, 0);
     if (! status) {
-        *length = pm[0].rm_eo - pm[0].rm_so + 1;
+        *length = pm[0].rm_eo - pm[0].rm_so;
 
-        result = (char*)realloc(result, sizeof(char) * (*length));
+        result = (char*)realloc(result, sizeof(char) * (*length + 1));
         memcpy(result, lexer->source_code + pm[0].rm_so, *length);
+        result[*length] = '\0';
 
         skipSourceCode(lexer, *length);
         return;
@@ -179,10 +181,11 @@ void scan(Lexer* lexer, regex_t* regex, char* result, int* length)
 
 char* scanBeforeToken(Lexer* lexer, char* token)
 {
-    for (int i = 0; i <= strlen(token) - strlen(token); i++) {
+    for (int i = 0; i <= strlen(lexer->source_code) - strlen(token); i++) {
         if (strncmp(lexer->source_code + i, token, strlen(token)) == 0) {
-            char* result = (char*)calloc(sizeof(char), i + 1);
-            memcpy(result, lexer->source_code, i);
+            char* result = (char*)calloc(sizeof(char), i - 1);
+            memcpy(result, lexer->source_code, i - 1);
+            skipSourceCode(lexer, i);
             return result;
         }
     }

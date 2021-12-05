@@ -15,6 +15,7 @@ GlobalVariables* NewGlobalVariables()
 void Execute(char* string)
 {
     source_code_t ast;
+    ast.statements = calloc(1, sizeof(statement_t*));
     GlobalVariables* g = NewGlobalVariables();
 
     if (!parse(string, &ast)) {
