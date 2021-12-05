@@ -4,14 +4,21 @@ pineapple lang 是一个简单的编程语言 demo。它包含了个手写的递
 
 **本项目是 pineapple lang 的 C 实现**
 
-*🚧 暂时还有几个 bug 没修好*
+## 编译&运行
 
-## 编译
+*注意，由于使用了 `regex.h` 库，在 Windows 下的编译可能会不通过*
 
 ```bash
 # 把依赖拉取到本地
 git submodule init && git submodule update
+# 创建编译目录
+mkdir build && cd build
+# 使用 cmake 生成 Makefile
+cmake ..
+# 编译
 make
+# 运行
+./pineapple-c ../examples/hello-world.pineapple
 ```
 
 ## 小教程
