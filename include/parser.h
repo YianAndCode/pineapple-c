@@ -5,10 +5,10 @@
 #define PARSER_H
 
 // Name ::= [_A-Za-z][_0-9A-Za-z]*
-bool parseName(Lexer *lexer, char *name);
+char* parseName(Lexer *lexer);
 
 // String ::= '"' '"' Ignored | '"' StringCharacter '"' Ignored
-bool parseString(Lexer *lexer, char *string);
+char* parseString(Lexer *lexer);
 
 // Variable ::= "$" Name Ignored
 bool parseVariable(Lexer *lexer, variable_t* variable);

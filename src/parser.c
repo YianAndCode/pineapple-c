@@ -1,35 +1,34 @@
 #include "parser.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-bool parseName(Lexer *lexer, char *name)
+char* parseName(Lexer *lexer)
 {
     token_t token = NextTokenIs(lexer, TOKEN_NAME);
 
-    name = token.token;
-
-    return true;
+    return token.token;
 }
 
-bool parseString(Lexer *lexer, char *string)
+char* parseString(Lexer *lexer)
 {
+    char* string = NULL;
     switch (LookAhead(lexer))
     {
         case TOKEN_DUOQUOTE:
             NextTokenIs(lexer, TOKEN_DUOQUOTE);
             LookAheadAndSkip(lexer, TOKEN_IGNORED);
-            string = "";
-            return true;
+            return "";
 
         case TOKEN_QUOTE:
             NextTokenIs(lexer, TOKEN_QUOTE);
             string = scanBeforeToken(lexer, lexer->TokenMap[TOKEN_QUOTE]);
             NextTokenIs(lexer, TOKEN_QUOTE);
             LookAheadAndSkip(lexer, TOKEN_IGNORED);
-            return true;
+            return string;
 
         default:
-            return false;
+            return "";
     }
 }
 
@@ -37,10 +36,7 @@ bool parseVariable(Lexer *lexer, variable_t* variable)
 {
     variable->line_num = GetLineNum(lexer);
     NextTokenIs(lexer, TOKEN_VAR_PREFIX);
-    if (!parseName(lexer, variable->name))
-    {
-        return false;
-    }
+    variable->name = parseName(lexer);
 
     LookAheadAndSkip(lexer, TOKEN_IGNORED);
 
@@ -57,10 +53,7 @@ bool parseAssignment(Lexer *lexer, assignment_statement_t* assignment)
     LookAheadAndSkip(lexer, TOKEN_IGNORED);
     NextTokenIs(lexer, TOKEN_EQUAL);
     LookAheadAndSkip(lexer, TOKEN_IGNORED);
-    if (!parseString(lexer, assignment->string))
-    {
-        return false;
-    }
+    assignment->string = parseString(lexer);
     LookAheadAndSkip(lexer, TOKEN_IGNORED);
     return true;
 }
@@ -90,13 +83,13 @@ bool parseStatement(Lexer *lexer, statement_t* statement)
     {
         case TOKEN_PRINT:
             statement->type = STATEMENT_PRINT;
-            statement->var = malloc(sizeof(variable_t));
+            statement->var = calloc(1, sizeof(variable_t));
             return parsePrint(lexer, (print_statement_t*)statement);
 
         case TOKEN_VAR_PREFIX:
             statement = realloc(statement, sizeof(assignment_statement_t));
             statement->type = STATEMENT_ASSIGNMENT;
-            statement->var = malloc(sizeof(variable_t));
+            statement->var = calloc(1, sizeof(variable_t));
             return parseAssignment(lexer, (assignment_statement_t*)statement);
 
         default:

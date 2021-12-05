@@ -183,8 +183,9 @@ char* scanBeforeToken(Lexer* lexer, char* token)
 {
     for (int i = 0; i <= strlen(lexer->source_code) - strlen(token); i++) {
         if (strncmp(lexer->source_code + i, token, strlen(token)) == 0) {
-            char* result = (char*)calloc(sizeof(char), i - 1);
-            memcpy(result, lexer->source_code, i - 1);
+            char* result = (char*)calloc(sizeof(char), i + 1);
+            memcpy(result, lexer->source_code, i);
+            result[i] = '\0';
             skipSourceCode(lexer, i);
             return result;
         }
